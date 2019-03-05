@@ -1,0 +1,10 @@
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  font-family: Roboto, serif;
+}
+
+body {
+  background: linear-gradient(to left, #a8e063, #56ab2f) !important;
+}
