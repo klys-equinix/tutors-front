@@ -8,7 +8,7 @@ export const accountReset = async (email, password, resetToken) => {
       password,
       resetToken
     };
-    const resp = await Api.postWithoutToken("https://localhost:8080/api/user/account/reset", data);
+    const resp = await Api.postWithoutToken("http://localhost:8080/api/user/account/reset", data);
     return resp;
   } catch (e) {
     console.log(e.response.data);

@@ -91,10 +91,10 @@ export class Api {
     const headers = {
       Accept: 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${btoa(`my-trusted-client:secret`)}`,
+      Authorization: `Basic ${btoa(`my-trusted-client:praxis-secret`)}`,
     };
     return api._axios({
-      url: 'https://localhost:8080/oauth/token',
+      url: 'http://localhost:8080/oauth/token',
       method: 'post',
       headers,
       data: queryString.stringify({

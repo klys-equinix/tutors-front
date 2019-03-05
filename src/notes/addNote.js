@@ -3,7 +3,7 @@ import {Api} from "../api/Api";
 
 export const addNote = async (note) => {
   try {
-    const resp = await Api.post("https://localhost:8080/api/note", note);
+    const resp = await Api.post("http://localhost:8080/api/note", note);
     return resp;
   } catch (e) {
     console.log(e.response.data);

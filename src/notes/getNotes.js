@@ -3,7 +3,7 @@ import {Api} from "../api/Api";
 
 export const getNotes = async () => {
   try {
-    const resp = await Api.get("https://localhost:8080/api/note");
+    const resp = await Api.get("http://localhost:8080/api/note");
     return resp;
   } catch (e) {
     console.log(e.response.data);

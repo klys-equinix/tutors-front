@@ -6,7 +6,7 @@ export const passwordChange = async (password) => {
     const data = {
       password
     };
-    const resp = await Api.patch("https://localhost:8080/api/user/password", data);
+    const resp = await Api.patch("http://localhost:8080/api/user/password", data);
     return resp;
   } catch (e) {
     console.log(e.response.data);
