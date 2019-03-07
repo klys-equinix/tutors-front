@@ -4,7 +4,7 @@ import Login from "./login/Login";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import { theme } from './utils/theme';
 import PasswordChange from "./password-reset/PasswordChange";
-import Notes from "./notes/Notes";
+import Notes from "./home/Home";
 import AccountReset from "./account-reset/AccountReset";
 import Register from "./register/Register";
 
