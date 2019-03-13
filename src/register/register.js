@@ -1,4 +1,3 @@
-import {AuthRepository} from "../data/AuthRepository";
 import {Api} from "../api/Api";
 
 export const register = async (username, password) => {
@@ -7,8 +6,7 @@ export const register = async (username, password) => {
       email: username,
       password
     };
-    const resp = await Api.postWithoutToken("http://localhost:8080/api/user", data);
-    return resp;
+    return await Api.postWithoutToken("http://localhost:8080/api/user", data);
   } catch (e) {
     console.log(e);
     throw e;

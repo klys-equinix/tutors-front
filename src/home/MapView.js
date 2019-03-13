@@ -94,13 +94,16 @@ const styles = theme => ({
       display: 'none',
     },
   },
+  mainContainer: {
+    padding: 0,
+    margin:0,
+  },
 });
-class Home extends React.Component {
+
+class MapView extends React.Component {
   state = {
     anchorEl: null,
     mobileMoreAnchorEl: null,
-    isMenuOpen: false,
-    isMobileMenuOpen: false,
   };
 
   handleProfileMenuOpen = event => {
@@ -109,109 +112,85 @@ class Home extends React.Component {
 
   handleMenuClose = () => {
     this.setState({ anchorEl: null });
-    this.handleMobileMenuClose();
   };
-
-  handleMobileMenuOpen = event => {
-    this.setState({ mobileMoreAnchorEl: event.currentTarget });
-  };
-
-  handleMobileMenuClose = () => {
-    this.setState({ mobileMoreAnchorEl: null });
-  };
-
-  renderMenu = () => {
-    const {anchorEl, isMenuOpen} = this.state;
-
-    return (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-      transformOrigin={{vertical: 'top', horizontal: 'right'}}
-      open={isMenuOpen}
-      onClose={this.handleMenuClose}
-    >
-      <MenuItem onClick={this.handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={this.handleMenuClose}>My account</MenuItem>
-    </Menu>
-  )};
-
-  renderMobileMenu = () => {
-    const {mobileMoreAnchorEl, isMobileMenuOpen} = this.state;
-
-    return (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-      transformOrigin={{vertical: 'top', horizontal: 'right'}}
-      open={isMobileMenuOpen}
-      onClose={this.handleMenuClose}
-    >
-    </Menu>
-  )};
-
-  render() {
-    const {anchorEl, mobileMoreAnchorEl, isMenuOpen, isMobileMenuOpen} = this.state;
-    const {classes} = this.props;
-
-      return (
-        <Grid container>
-          <Grid item xs={12}>
-            <AppBar position="static">
-              <Toolbar>
-                <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
-                  <MenuIcon onClick={this.renderMenu}/>
-                </IconButton>
-                <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-                  Tutors
-                </Typography>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon/>
-                  </div>
-                  <InputBase
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                  />
-                </div>
-                <div className={classes.grow}/>
-                <div className={classes.sectionDesktop}>
-                  <IconButton
-                    aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-                    aria-haspopup="true"
-                    onClick={this.handleProfileMenuOpen}
-                    color="inherit"
-                  >
-                    <AccountCircle/>
-                  </IconButton>
-                </div>
-                <div className={classes.sectionMobile}>
-                  <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
-                    <MoreIcon/>
-                  </IconButton>
-                </div>
-              </Toolbar>
-            </AppBar>
-          </Grid>
-          <Grid item xs={12}>
-            <GoogleMapsContainer/>
-          </Grid>
-        </Grid>
-      )
-    }
-
 
   logout = () => {
     AuthRepository.deleteToken();
     this.props.history.push('/login')
+  };
+
+  render() {
+    const {anchorEl} = this.state;
+    const {classes} = this.props;
+
+    const isMenuOpen = Boolean(anchorEl);
+
+    const renderMenu = (
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+        transformOrigin={{vertical: 'top', horizontal: 'right'}}
+        open={isMenuOpen}
+        onClose={this.handleMenuClose}
+      >
+        <MenuItem onClick={this.logout}>Wyloguj</MenuItem>
+        <MenuItem onClick={this.handleMenuClose}>Moje konto</MenuItem>
+      </Menu>
+    );
+
+    return (
+      <Grid container className={classes.mainContainer}>
+        <Grid item xs={12}>
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
+                <MenuIcon/>
+              </IconButton>
+              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+                Tutors
+              </Typography>
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon/>
+                </div>
+                <InputBase
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                />
+              </div>
+              <div className={classes.grow}/>
+              <div className={classes.sectionDesktop}>
+                <IconButton
+                  aria-owns={isMenuOpen ? 'material-appbar' : undefined}
+                  aria-haspopup="true"
+                  onClick={this.handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle/>
+                </IconButton>
+              </div>
+              <div className={classes.sectionMobile}>
+                <IconButton aria-haspopup="true" onClick={this.handleProfileMenuOpen} color="inherit">
+                  <MoreIcon/>
+                </IconButton>
+              </div>
+            </Toolbar>
+          </AppBar>
+          {renderMenu}
+        </Grid>
+        <Grid item xs={12}>
+          <GoogleMapsContainer/>
+        </Grid>
+      </Grid>
+    )
   }
 }
 
-Home.propTypes = {
+MapView.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withRouter(Home));
+export default withStyles(styles)(withRouter(MapView));

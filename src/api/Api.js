@@ -59,6 +59,7 @@ export class Api {
       }
 
       if (e.response && e.response.data) {
+        throw Api.parseErrors(e.response.data);
       } else {
         throw e;
       }
@@ -71,9 +72,22 @@ export class Api {
       return await this._axios(newConfig);
     } catch (e) {
       if (e.response.data) {
+        throw Api.parseErrors(e.response.data);
       } else {
         throw e;
       }
+    }
+  }
+
+  static parseErrors(data) {
+    if(data.errors) {
+      return data.errors
+        .map(e => e.defaultMessage)
+        .reduce((e1, e2) => e1 + ' ' + e2);
+    } else if (data.error_description) {
+      return data.error_description;
+    } else {
+      return JSON.stringify(data);
     }
   }
 
@@ -85,7 +99,7 @@ export class Api {
     return AuthRepository.readToken();
   }
 
-  static obtainAccessToken(username, password) {
+  static async obtainAccessToken(username, password) {
     const api = this.getInstance();
 
     const headers = {
@@ -93,16 +107,24 @@ export class Api {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: `Basic ${btoa(`my-trusted-client:praxis-secret`)}`,
     };
-    return api._axios({
-      url: 'http://localhost:8080/oauth/token',
-      method: 'post',
-      headers,
-      data: queryString.stringify({
-        grant_type: 'password',
-        username,
-        password,
-      }),
-    });
+    try {
+      return await api._axios({
+        url: 'http://localhost:8080/oauth/token',
+        method: 'post',
+        headers,
+        data: queryString.stringify({
+          grant_type: 'password',
+          username,
+          password,
+        }),
+      });
+    } catch (e) {
+      if (e.response.data) {
+        throw Api.parseErrors(e.response.data);
+      } else {
+        throw e;
+      }
+    }
   }
 
   static putWithoutToken(url, data) {
