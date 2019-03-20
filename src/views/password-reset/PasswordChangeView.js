@@ -14,7 +14,7 @@ import {passwordChange} from "./passwordChange";
 import * as qs from "query-string";
 import {accountReset} from "./accountReset";
 import FormLabel from "@material-ui/core/es/FormLabel/FormLabel";
-import {validatePassword} from "../utils/validatePassword";
+import {validatePassword} from "../../utils/validatePassword";
 
 const styles = theme => ({
     main: {
@@ -52,7 +52,7 @@ const styles = theme => ({
     },
 });
 
-class PasswordChange extends React.Component {
+class PasswordChangeView extends React.Component {
     constructor() {
       super();
       this.handleSubmit = this.handleSubmit.bind(this);
@@ -132,8 +132,8 @@ class PasswordChange extends React.Component {
     }
 }
 
-PasswordChange.propTypes = {
+PasswordChangeView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withRouter(PasswordChange));
+export default withStyles(styles)(withRouter(PasswordChangeView));

@@ -1,5 +1,5 @@
-import {AuthRepository} from "../data/AuthRepository";
-import {Api} from "../api/Api";
+import {AuthRepository} from "../../data/AuthRepository";
+import {Api} from "../../api/Api";
 
 export const authenticate = async (username, password) => {
   try {

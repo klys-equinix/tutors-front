@@ -7,7 +7,7 @@ import {
   withRouter
 } from 'react-router-dom';
 import {getNotes} from "./getNotes";
-import {AuthRepository} from "../data/AuthRepository";
+import {AuthRepository} from "../../data/AuthRepository";
 import Grid from "@material-ui/core/Grid/Grid";
 import GoogleMapsContainer from "../map/GoogleMapsContainer";
 import AppBar from "@material-ui/core/AppBar";
@@ -134,7 +134,7 @@ class MapView extends React.Component {
         onClose={this.handleMenuClose}
       >
         <MenuItem onClick={this.logout}>Wyloguj</MenuItem>
-        <MenuItem onClick={this.handleMenuClose}>Moje konto</MenuItem>
+        <MenuItem onClick={() => this.props.history.push("/account")}>Moje konto</MenuItem>
       </Menu>
     );
 

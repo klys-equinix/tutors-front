@@ -1,4 +1,4 @@
-import {Api} from "../api/Api";
+import {Api} from "../../api/Api";
 
 export const register = async (username, password) => {
   try {

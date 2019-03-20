@@ -6,12 +6,10 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import withStyles from '@material-ui/core/styles/withStyles';
-import Typography from "@material-ui/core/Typography/Typography";
 import {
   withRouter
 } from 'react-router-dom';
-import {register} from "./register";
-import {validatePassword} from "../utils/validatePassword";
+import {authenticate} from "./authenticate";
 import FormLabel from "@material-ui/core/es/FormLabel/FormLabel";
 
 const styles = theme => ({
@@ -54,7 +52,7 @@ const styles = theme => ({
   },
 });
 
-class Register extends React.Component {
+class LoginView extends React.Component {
   constructor() {
     super();
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -66,23 +64,14 @@ class Register extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const data = new FormData(event.target);
-    const password = data.get('password');
-    const passwordRepeated = data.get('passwordRepeated');
-    if (password === passwordRepeated && validatePassword(password)) {
-      this.setState({error: null});
-
-      register(data.get('login'), data.get('password'))
-        .then(() => this.props.history.push('/login'))
-        .catch((e) => this.setState({error: e}));
-    } else {
-      this.setState({error: 'Bad password'});
-    }
+    authenticate(data.get('login'), data.get('password'))
+      .then(() => this.props.history.push('/map'))
+      .catch((e) => this.setState({error: e}));
   }
 
   render() {
     const {classes} = this.props;
     const {error} = this.state;
-
     return (
       <main className={classes.main}>
         <Paper className={classes.paper}>
@@ -102,16 +91,21 @@ class Register extends React.Component {
               <InputLabel htmlFor="password">Hasło</InputLabel>
               <Input name="password" type="password" id="password" autoComplete="current-password" required/>
             </FormControl>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="passwordRepeated">Hasło powtórzone</InputLabel>
-              <Input name="passwordRepeated" type="password" id="password" required/>
-            </FormControl>
             <Button
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submitButton}
               type={"submit"}
+            >
+              Zaloguj się
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.secondaryButton}
+              onClick={() => this.props.history.push('/')}
             >
               Zarejestruj się
             </Button>
@@ -120,9 +114,9 @@ class Register extends React.Component {
               variant="contained"
               color="primary"
               className={classes.secondaryButton}
-              onClick={() => this.props.history.push('/login')}
+              onClick={() => this.props.history.push('/request-reset')}
             >
-              Zaloguj sie
+              Odzyskaj dostęp
             </Button>
           </form>
         </Paper>
@@ -131,8 +125,8 @@ class Register extends React.Component {
   }
 }
 
-Register.propTypes = {
+LoginView.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withRouter(Register));
+export default withStyles(styles)(withRouter(LoginView));

@@ -49,7 +49,7 @@ const styles = theme => ({
     },
 });
 
-class AccountReset extends React.Component {
+class AccountResetView extends React.Component {
     constructor() {
       super();
       this.handleSubmit = this.handleSubmit.bind(this);
@@ -88,8 +88,8 @@ class AccountReset extends React.Component {
     }
 }
 
-AccountReset.propTypes = {
+AccountResetView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withRouter(AccountReset));
+export default withStyles(styles)(withRouter(AccountResetView));
