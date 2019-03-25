@@ -20,6 +20,7 @@ import {Button} from "@material-ui/core";
 import {AuthRepository} from "../../data/AuthRepository";
 import ReactPlaceholder from "react-placeholder";
 import {getAccount} from "./getAccount";
+import CreateAccountDetailsModal from "./CreateAccountDetailsModal";
 
 const styles = theme => ({
   mainContainer: {
@@ -48,6 +49,9 @@ const styles = theme => ({
     fontSize: '40px',
     color: theme.palette.secondary.main,
   },
+  userDetails: {
+    height: '100%'
+  },
   sectionDesktop: {
     display: 'none',
     [theme.breakpoints.up('md')]: {
@@ -63,6 +67,11 @@ const styles = theme => ({
   grow: {
     flexGrow: 1,
   },
+  addDetails: {
+    marginTop: theme.spacing.unit * 10,
+    height: '100%',
+    fontSize: '24px',
+  },
 });
 
 class AccountView extends React.Component {
@@ -71,14 +80,15 @@ class AccountView extends React.Component {
     mobileMoreAnchorEl: null,
     account: null,
     ready: false,
+    showDetailsModal: false,
   };
 
   handleProfileMenuOpen = event => {
-    this.setState({ anchorEl: event.currentTarget });
+    this.setState({anchorEl: event.currentTarget});
   };
 
   handleMenuClose = () => {
-    this.setState({ anchorEl: null });
+    this.setState({anchorEl: null});
   };
 
   logout = () => {
@@ -87,18 +97,24 @@ class AccountView extends React.Component {
   };
 
   fetchData = () => {
-    getAccount().then(resp => this.setState({account: resp.data, ready: true }));
+    getAccount().then(resp => this.setState({account: resp.data, ready: true}));
   };
 
   componentDidMount() {
     this.fetchData();
   }
 
+  hideModal = () => {
+    this.fetchData();
+    this.setState({showDetailsModal: false});
+  };
+
   render() {
     const {
       anchorEl,
       account,
-      ready
+      ready,
+      showDetailsModal
     } = this.state;
     const {classes} = this.props;
 
@@ -116,45 +132,122 @@ class AccountView extends React.Component {
         <MenuItem onClick={() => this.props.history.push("/account")}>Moje konto</MenuItem>
       </Menu>
     );
+
     return (
       <div className={classes.mainContainer}>
-          <AppBar position="static">
-            <Toolbar>
-              <Button style={{color: 'white'}} onClick={() => this.props.history.push('/map')}>
-                <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-                  Tutors
-                </Typography>
-              </Button>
-              <div className={classes.grow}/>
-              <div className={classes.sectionDesktop}>
-                <IconButton
-                  aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-                  aria-haspopup="true"
-                  onClick={this.handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountCircle/>
-                </IconButton>
-              </div>
-              <div className={classes.sectionMobile}>
-                <IconButton aria-haspopup="true" onClick={this.handleProfileMenuOpen} color="inherit">
-                  <MoreIcon/>
-                </IconButton>
-              </div>
-            </Toolbar>
-          </AppBar>
-          {renderMenu}
-          <Paper className={classes.paper}>
-            <Grid container spacing={24}>
-              <Grid item xs={12} className={classNames(classes.gridItem, classes.header)}>
-                <ReactPlaceholder type='text' rows={1} ready={account}>
-                  {ready && account.email}
-                </ReactPlaceholder>
-              </Grid>
+        <AppBar position="static">
+          <Toolbar>
+            <Button style={{color: 'white'}} onClick={() => this.props.history.push('/map')}>
+              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+                Tutors
+              </Typography>
+            </Button>
+            <div className={classes.grow}/>
+            <div className={classes.sectionDesktop}>
+              <IconButton
+                aria-owns={isMenuOpen ? 'material-appbar' : undefined}
+                aria-haspopup="true"
+                onClick={this.handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle/>
+              </IconButton>
+            </div>
+            <div className={classes.sectionMobile}>
+              <IconButton aria-haspopup="true" onClick={this.handleProfileMenuOpen} color="inherit">
+                <MoreIcon/>
+              </IconButton>
+            </div>
+          </Toolbar>
+        </AppBar>
+        {renderMenu}
+        <Paper className={classes.paper}>
+          <Grid container spacing={24}>
+            <Grid item xs={12} className={classNames(classes.gridItem, classes.header)}>
+              <ReactPlaceholder type='text' rows={1} ready={account}>
+                {ready && account.email}
+              </ReactPlaceholder>
             </Grid>
-          </Paper>
+            {this.renderAddDetails()}
+            {!showDetailsModal && this.renderAddProfile()}
+          </Grid>
+        </Paper>
       </div>
     )
+  }
+
+  renderAddDetails() {
+    const {
+      account,
+      ready,
+      showDetailsModal,
+    } = this.state;
+    const {classes} = this.props;
+    return <Grid item xs={12} className={classNames(classes.gridItem, classes.userDetails)} justify={'center'}>
+      <ReactPlaceholder type='text' rows={1} ready={account}>
+        {(ready && account.details) ?
+          <span>details</span>
+          :
+          (
+            showDetailsModal ?
+              <Fragment>
+                <CreateAccountDetailsModal
+                  show={showDetailsModal}
+                  handleClose={this.hideModal}
+                  userId={account.id}
+                />
+              </Fragment>
+              :
+              <Fragment>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.addDetails}
+                  onClick={() => this.setState({showDetailsModal: true})}
+                >
+                  Dodaj dane konta aby móc składać oferty
+                </Button>
+              </Fragment>
+          )
+        }
+      </ReactPlaceholder>
+    </Grid>;
+  }
+
+  renderAddProfile() {
+    const {
+      account,
+      ready,
+    } = this.state;
+    const {classes} = this.props;
+    return <Grid item xs={12} className={classNames(classes.gridItem, classes.userDetails)} justify={'center'}>
+      <ReactPlaceholder type='text' rows={1} ready={account}>
+        {(ready && account.details) ?
+          <Fragment>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.addDetails}
+            >
+              Wybierz punkt na mapie by stworzyć profil korepetytora
+            </Button>
+          </Fragment>
+          :
+          <Fragment>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.addDetails}
+            >
+              Wybierz punkt na mapie by stworzyć profil korepetytora
+            </Button>
+          </Fragment>
+        }
+      </ReactPlaceholder>
+    </Grid>;
   }
 }
 

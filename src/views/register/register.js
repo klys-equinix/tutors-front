@@ -1,4 +1,5 @@
 import {Api} from "../../api/Api";
+import * as config from "react-global-configuration";
 
 export const register = async (username, password) => {
   try {
@@ -6,7 +7,7 @@ export const register = async (username, password) => {
       email: username,
       password
     };
-    return await Api.postWithoutToken("http://localhost:8080/api/user", data);
+    return await Api.postWithoutToken(`${config.get('apiUrl')}/user`, data);
   } catch (e) {
     console.log(e);
     throw e;

@@ -6,7 +6,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {
   withRouter
 } from 'react-router-dom';
-import {getNotes} from "./getNotes";
 import {AuthRepository} from "../../data/AuthRepository";
 import Grid from "@material-ui/core/Grid/Grid";
 import GoogleMapsContainer from "../map/GoogleMapsContainer";

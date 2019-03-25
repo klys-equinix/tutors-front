@@ -8,9 +8,14 @@ import MapView from "./views/home/MapView";
 import AccountReset from "./views/account-reset/AccountResetView";
 import Register from "./views/register/RegisterView";
 import AccountView from "./views/account/AccountView";
+import * as config from "react-global-configuration";
 
 class App extends Component {
   render() {
+    config.set({
+      apiUrl: 'http://localhost:8080/api',
+    });
+
     return (
       <Router>
         <MuiThemeProvider theme={theme}>

@@ -1,5 +1,6 @@
-import {AuthRepository} from "../../data/AuthRepository";
 import {Api} from "../../api/Api";
+import * as config from "react-global-configuration";
+
 
 export const accountReset = async (email, password, resetToken) => {
   try {
@@ -8,7 +9,7 @@ export const accountReset = async (email, password, resetToken) => {
       password,
       resetToken
     };
-    const resp = await Api.postWithoutToken("http://localhost:8080/api/user/account/reset", data);
+    const resp = await Api.postWithoutToken(`${config.get('apiUrl')}/user/account/reset`, data);
     return resp;
   } catch (e) {
     console.log(e.response.data);
