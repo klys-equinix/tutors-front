@@ -247,7 +247,7 @@ class AccountView extends React.Component {
             account,
             ready,
         } = this.state;
-        const {classes} = this.props;
+        const {classes, history} = this.props;
         return <Grid item xs={12} className={classNames(classes.gridItem, classes.userDetails)} justify={'center'}>
             <ReactPlaceholder type='text' rows={1} ready={account}>
                 {(ready && account.details) ?
@@ -268,6 +268,7 @@ class AccountView extends React.Component {
                             variant="contained"
                             color="primary"
                             className={classes.addDetails}
+                            onClick={() => history.push("/map")}
                         >
                             Wybierz punkt na mapie by stworzyć profil korepetytora
                         </Button>
