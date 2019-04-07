@@ -257,6 +257,7 @@ class AccountView extends React.Component {
                             variant="contained"
                             color="primary"
                             className={classes.addDetails}
+                            onClick={() => history.push("/map")}
                         >
                             Wybierz punkt na mapie by stworzyć profil korepetytora
                         </Button>

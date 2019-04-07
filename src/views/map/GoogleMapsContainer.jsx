@@ -1,31 +1,88 @@
 import React, {Component} from "react";
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from "google-maps-react";
+import {withStyles} from "@material-ui/core";
+import Button from "@material-ui/core/Button/Button";
+import Modal from "@material-ui/core/Modal";
+import classNames from "classnames";
+import Paper from "@material-ui/core/Paper";
+import CreateProfileForm from "./CreateProfileForm";
+import {InfoWindowEx} from "./InfoWindowEx";
 
-export class MapContainer extends Component {
+const styles = theme => ({
+    addProfile: {
+        backgroundColor: theme.palette.primary.main,
+    },
+    paper: {
+        position: 'absolute',
+        width: theme.spacing.unit * 150,
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 4,
+        outline: 'none',
+    },
+    modal: {
+        top: `50%`,
+        left: `50%`,
+        transform: `translate(-50%, -50%)`,
+    },
+    form: {
+        width: '100%',
+        marginTop: theme.spacing.unit,
+    },
+    gridItem: {
+        padding: theme.spacing.unit,
+    },
+});
+
+class MapContainer extends Component {
     constructor(props) {
         super(props);
-        this.onMarkerClick = this.onMarkerClick.bind(this);
         this.state = {
-            showingInfoWindow: false,
-            activeMarker: {},
-            selectedPlace: {}
+            showingProfileCreationButton: false,
+            showingProfileCreationWindow: false,
+            profileCreationMarker: {},
+            selectedPlace: {},
+            profileCreationMarkerPosition: {},
         };
     }
 
-    onMarkerClick(props, marker, e) {
+    onMarkerClick = (props, marker, e) => {
         this.setState({
             selectedPlace: props,
-            activeMarker: marker,
-            showingInfoWindow: true
+            profileCreationMarker: marker,
+            showingProfileCreationButton: true
         });
-    }
+    };
 
-    onMapClicked(mapProps, map, clickEvent) {
-        console.log(mapProps)
-        console.log(clickEvent)
-    }
+    onMapClicked = (mapProps, map, clickEvent) => {
+        this.setState({
+            profileCreationMarkerPosition: {
+                lat: clickEvent.latLng.lat(),
+                lng: clickEvent.latLng.lng()
+            }
+        });
+        if (this.state.showingProfileCreationButton) {
+            this.setState({
+                showingProfileCreationButton: false,
+                profileCreationMarker: null,
+                profileCreationMarkerPosition: {}
+            })
+        }
+    };
+
+    onClose = () => {
+        this.setState({showingProfileCreationWindow: false})
+    };
+
+    onOpen = () => {
+        this.setState({showingProfileCreationWindow: true})
+    };
 
     render() {
+        const {
+            classes
+        } = this.props;
+
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
@@ -52,22 +109,39 @@ export class MapContainer extends Component {
                     }}
                     onClick={this.onMapClicked}
                 >
-                    <InfoWindow
-                        marker={this.state.activeMarker}
-                        visible={this.state.showingInfoWindow}
+                    <Marker
+                        onClick={this.onMarkerClick}
+                        position={this.state.profileCreationMarkerPosition}
+                    />
+                    <InfoWindowEx
+                        marker={this.state.profileCreationMarker}
+                        visible={this.state.showingProfileCreationButton}
                     >
                         <div>
-                            <h1>{this.state.selectedPlace.name}</h1>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.addProfile}
+                                onClick={this.onOpen}
+                            >
+                                Stwórz profil z tą lokalizacją
+                            </Button>
                         </div>
-                    </InfoWindow>
+                    </InfoWindowEx>
                 </Map>
+                <Modal open={this.state.showingProfileCreationWindow} onClose={this.onClose}>
+                    <Paper className={classNames(classes.paper, classes.modal)}>
+                        <CreateProfileForm handleClose={this.onClose} userCoords={this.state.profileCreationMarkerPosition}/>
+                    </Paper>
+                </Modal>
             </div>
         );
     }
 }
 
-export default GoogleApiWrapper({
+export default withStyles(styles)(GoogleApiWrapper({
     apiKey: "AIzaSyBsaVGmYMB4M3iQ8UniR0xMHSscgjOFSu4",
     v: "3.30"
-})(MapContainer);
+})(MapContainer));
 
