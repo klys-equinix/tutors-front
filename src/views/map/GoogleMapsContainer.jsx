@@ -7,6 +7,7 @@ import classNames from "classnames";
 import Paper from "@material-ui/core/Paper";
 import CreateProfileForm from "./CreateProfileForm";
 import {InfoWindowEx} from "./InfoWindowEx";
+import {getProfiles} from "./getProfiles";
 
 const styles = theme => ({
     addProfile: {
@@ -43,6 +44,7 @@ class MapContainer extends Component {
             profileCreationMarker: {},
             selectedPlace: {},
             profileCreationMarkerPosition: {},
+            tutors: [],
         };
     }
 
@@ -70,8 +72,14 @@ class MapContainer extends Component {
         }
     };
 
+    fetchPlaces = (mapProps, map) => {
+        const {google} = mapProps;
+        getProfiles(52.237049, 21.017532, 10)
+            .then(resp => this.setState({tutors: resp.data}));
+    }
+
     onClose = () => {
-        this.setState({showingProfileCreationWindow: false})
+        this.setState({showingProfileCreationWindow: false, showingProfileCreationButton: false})
     };
 
     onOpen = () => {
@@ -108,6 +116,7 @@ class MapContainer extends Component {
                         lng: 21.017532
                     }}
                     onClick={this.onMapClicked}
+                    onReady={this.fetchPlaces}
                 >
                     <Marker
                         onClick={this.onMarkerClick}
@@ -129,6 +138,16 @@ class MapContainer extends Component {
                             </Button>
                         </div>
                     </InfoWindowEx>
+                    {
+                        this.state.tutors.map(tutor => {
+                            return (
+                                <Marker
+                                    title={tutor.email}
+                                    position={{lat: tutor.profile.lat, lng: tutor.profile.lng}}
+                                />
+                            )
+                        })
+                    }
                 </Map>
                 <Modal open={this.state.showingProfileCreationWindow} onClose={this.onClose}>
                     <Paper className={classNames(classes.paper, classes.modal)}>

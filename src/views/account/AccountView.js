@@ -16,13 +16,20 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuIcon from "../home/MapView";
-import {Button} from "@material-ui/core";
+import {Button, TableCell} from "@material-ui/core";
 import {AuthRepository} from "../../data/AuthRepository";
 import ReactPlaceholder from "react-placeholder";
 import {getAccount} from "./getAccount";
 import CreateAccountDetailsForm from "./CreateAccountDetailsForm";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableBody from "@material-ui/core/TableBody";
+import Table from "@material-ui/core/Table";
+import Icon from "@material-ui/core/Icon";
+import Levels from "../../dict/Levels";
+import Discipline from "../../dict/Discipline";
 
 const styles = theme => ({
     mainContainer: {
@@ -250,18 +257,56 @@ class AccountView extends React.Component {
         const {classes, history} = this.props;
         return <Grid item xs={12} className={classNames(classes.gridItem, classes.userDetails)} justify={'center'}>
             <ReactPlaceholder type='text' rows={1} ready={account}>
-                {(ready && account.details) ?
-                    <Fragment>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.addDetails}
-                            onClick={() => history.push("/map")}
-                        >
-                            Wybierz punkt na mapie by stworzyć profil korepetytora
-                        </Button>
-                    </Fragment>
+                {(ready && account.profile) ?
+                    (
+                        <Paper className={classes.paper}>
+                            <Grid container justify="center">
+                                <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <InputLabel>Odległość dojazdu: </InputLabel>
+                                    <br/>
+                                    {account.profile.range} km
+                                </Grid>
+                                <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <InputLabel>Opłata za dojazd (za km): </InputLabel>
+                                    <br/>
+                                    {account.profile.commuteRate} zł
+                                </Grid>
+                                <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <InputLabel>Dostępne miejsce korepetytora: </InputLabel>
+                                    <br/>
+                                    {account.profile.tutorsPlaceAvailable ? 'TAK' : 'NIE'}
+                                </Grid>
+                                <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <InputLabel>Kursy: </InputLabel>
+                                    <br/>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Poziom</TableCell>
+                                                <TableCell>Przedmiot</TableCell>
+                                                <TableCell>Nazwa własna</TableCell>
+                                                <TableCell>Cena za godzine</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {account.profile.courses.map(course => {
+                                                return (
+                                                    <TableRow>
+                                                        <TableCell component="th" scope="row">
+                                                            {Levels[course.level]}
+                                                        </TableCell>
+                                                        <TableCell>{Discipline[course.discipline]}</TableCell>
+                                                        <TableCell>{course.customName}</TableCell>
+                                                        <TableCell>{course.hourlyRate}</TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                    )
                     :
                     <Fragment>
                         <Button
