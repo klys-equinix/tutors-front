@@ -19,7 +19,6 @@ import MenuIcon from "../home/MapView";
 import {Button, TableCell} from "@material-ui/core";
 import {AuthRepository} from "../../data/AuthRepository";
 import ReactPlaceholder from "react-placeholder";
-import {getAccount} from "./getAccount";
 import CreateAccountDetailsForm from "./CreateAccountDetailsForm";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
@@ -30,6 +29,8 @@ import Table from "@material-ui/core/Table";
 import Icon from "@material-ui/core/Icon";
 import Levels from "../../dict/Levels";
 import Discipline from "../../dict/Discipline";
+import {CurrentUserRepository} from "../../data/CurrentUserRepository";
+import {getCurrentUser} from "../login/getCurrentUser";
 
 const styles = theme => ({
     mainContainer: {
@@ -105,11 +106,12 @@ class AccountView extends React.Component {
 
     logout = () => {
         AuthRepository.deleteToken();
+        CurrentUserRepository.deleteCurrentUser();
         this.props.history.push('/login')
     };
 
     fetchData = () => {
-        getAccount().then(resp => this.setState({account: resp.data, ready: true}));
+        getCurrentUser().then(() => this.setState({account: CurrentUserRepository.readCurrentUser(), ready: true}));
     };
 
     componentDidMount() {

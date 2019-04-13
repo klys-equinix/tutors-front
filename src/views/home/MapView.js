@@ -21,6 +21,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
+import {CurrentUserRepository} from "../../data/CurrentUserRepository";
 
 const styles = theme => ({
   root: {
@@ -112,6 +113,7 @@ class MapView extends React.Component {
 
   logout = () => {
     AuthRepository.deleteToken();
+    CurrentUserRepository.deleteCurrentUser();
     this.props.history.push('/login')
   };
 

@@ -8,6 +8,7 @@ import Paper from "@material-ui/core/Paper";
 import CreateProfileForm from "./CreateProfileForm";
 import {InfoWindowEx} from "./InfoWindowEx";
 import {getProfiles} from "./getProfiles";
+import {CurrentUserRepository} from "../../data/CurrentUserRepository";
 
 const styles = theme => ({
     addProfile: {
@@ -33,6 +34,10 @@ const styles = theme => ({
     gridItem: {
         padding: theme.spacing.unit,
     },
+    tutorInfo: {
+        width: '20px',
+        height: '10px'
+    }
 });
 
 class MapContainer extends Component {
@@ -45,6 +50,7 @@ class MapContainer extends Component {
             selectedPlace: {},
             profileCreationMarkerPosition: {},
             tutors: [],
+            currentUser: {},
         };
     }
 
@@ -74,9 +80,10 @@ class MapContainer extends Component {
 
     fetchPlaces = (mapProps, map) => {
         const {google} = mapProps;
+        this.setState({currentUser: CurrentUserRepository.readCurrentUser()});
         getProfiles(52.237049, 21.017532, 10)
             .then(resp => this.setState({tutors: resp.data}));
-    }
+    };
 
     onClose = () => {
         this.setState({showingProfileCreationWindow: false, showingProfileCreationButton: false})
@@ -91,10 +98,13 @@ class MapContainer extends Component {
             classes
         } = this.props;
 
+        const {
+            currentUser
+        } = this.state;
+
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
-
         return (
             <div
                 style={{
@@ -127,34 +137,76 @@ class MapContainer extends Component {
                         visible={this.state.showingProfileCreationButton}
                     >
                         <div>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.addProfile}
-                                onClick={this.onOpen}
-                            >
-                                Stwórz profil z tą lokalizacją
-                            </Button>
+                            {
+                                !currentUser.details ?
+                                    (
+                                        <span>Dodaj dane konta aby móc utowrzyć profil</span>
+                                    )
+                                    :
+                                    (
+                                        !currentUser.profile ?
+                                            <Button
+                                                fullWidth
+                                                variant="contained"
+                                                color="primary"
+                                                className={classes.addProfile}
+                                                onClick={this.onOpen}
+                                            >
+                                                Stwórz profil z tą lokalizacją
+                                            </Button>
+                                            :
+                                            <Button
+                                                fullWidth
+                                                variant="contained"
+                                                color="primary"
+                                                className={classes.addProfile}
+                                            >
+                                                Zmien swój adres
+                                            </Button>
+                                    )
+
+                            }
                         </div>
                     </InfoWindowEx>
                     {
                         this.state.tutors.map(tutor => {
-                            return (
-                                <Marker
-                                    title={tutor.email}
-                                    position={{lat: tutor.profile.lat, lng: tutor.profile.lng}}
-                                />
-                            )
+                            if (tutor.email !== currentUser.email) {
+                                this.renderAvailableTutorMarker(tutor)
+                            } else {
+                                this.renderAvailableTutorMarker(tutor)
+                            }
                         })
                     }
                 </Map>
                 <Modal open={this.state.showingProfileCreationWindow} onClose={this.onClose}>
                     <Paper className={classNames(classes.paper, classes.modal)}>
-                        <CreateProfileForm handleClose={this.onClose} userCoords={this.state.profileCreationMarkerPosition}/>
+                        <CreateProfileForm handleClose={this.onClose}
+                                           userCoords={this.state.profileCreationMarkerPosition}/>
                     </Paper>
                 </Modal>
             </div>
+        );
+    }
+
+    renderAvailableTutorMarker = (tutor) => {
+        const {
+            classes
+        } = this.props;
+        console.log(tutor)
+        return (
+            <Marker
+                title={tutor.email}
+                position={{lat: tutor.profile.lat, lng: tutor.profile.lng}}
+            >
+                {/*<InfoWindow*/}
+                {/*    visible={true}*/}
+                {/*    style={classes.tutorInfo}*/}
+                {/*>*/}
+                {/*    <div>*/}
+                {/*        {tutor.details.lastName}*/}
+                {/*    </div>*/}
+                {/*</InfoWindow>*/}
+            </Marker>
         );
     }
 }
