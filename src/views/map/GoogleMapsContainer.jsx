@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import Circle from "./Circle";
 import circle from "../../circle.png"
 import createCricle from "../../createCircle.png"
+import Levels from "../../dict/Levels";
 
 
 const styles = theme => ({
@@ -55,7 +56,7 @@ class MapContainer extends Component {
             clickedTutorMarker: null,
             clickedTutorEmail: {},
             selectedPlace: {},
-            profileCreationMarkerPosition: {},
+            profileCreationMarkerPosition: null,
             tutors: [],
             currentUser: {},
         };
@@ -87,15 +88,34 @@ class MapContainer extends Component {
             this.setState({
                 showingProfileCreationButton: false,
                 profileCreationMarker: null,
-                profileCreationMarkerPosition: {}
+                profileCreationMarkerPosition: null
             })
         }
     };
 
+    zoomed = (mapProps, map) => {
+        console.log(mapProps)
+        debugger
+    }
+
+    componentDidMount() {
+        if (navigator && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const coords = pos.coords;
+                this.setState({
+                    currentLocation: {
+                        lat: coords.latitude,
+                        lng: coords.longitude
+                    }
+                })
+            })
+        }
+    }
+
     fetchPlaces = (mapProps, map) => {
         const {google} = mapProps;
         this.setState({currentUser: CurrentUserRepository.readCurrentUser()});
-        getProfiles(52.237049, 21.017528, 10)
+        getProfiles(52.237049, 21.017528, 10, 'ELEMENTARY')
             .then(resp => {
                 this.setState({tutors: resp.data})
             });
@@ -118,7 +138,9 @@ class MapContainer extends Component {
         const {
             currentUser,
             clickedTutorMarker,
-            clickedTutorEmail
+            clickedTutorEmail,
+            profileCreationMarkerPosition,
+            currentLocation
         } = this.state;
 
         if (!this.props.google) {
@@ -136,25 +158,22 @@ class MapContainer extends Component {
                 <Map
                     style={{}}
                     google={this.props.google}
-                    zoom={14}
-                    center={{
-                        lat: 52.237049,
-                        lng: 21.017528
-                    }}
+                    center={this.state.currentLocation}
                     initialCenter={{
                         lat: 52.237049,
                         lng: 21.017528
                     }}
                     onClick={this.onMapClicked}
                     onReady={this.fetchPlaces}
+                    onZoomChanged={this.zoomed}
                 >
                     <Marker
                         onClick={this.onMarkerClick}
-                        position={this.state.profileCreationMarkerPosition}
+                        position={profileCreationMarkerPosition ? profileCreationMarkerPosition : currentLocation}
                         icon={{
                             url: createCricle,
-                            anchor: new google.maps.Point(28,28),
-                            scaledSize: new google.maps.Size(28,28)
+                            anchor: new google.maps.Point(28, 28),
+                            scaledSize: new google.maps.Size(28, 28)
                         }}
                     />
                     <InfoWindowEx
@@ -234,8 +253,8 @@ class MapContainer extends Component {
                 onClick={this.onTutorMarkerClick}
                 icon={{
                     url: circle,
-                    anchor: new google.maps.Point(28,28),
-                    scaledSize: new google.maps.Size(28,28)
+                    anchor: new google.maps.Point(28, 28),
+                    scaledSize: new google.maps.Size(28, 28)
                 }}
             />
         );
