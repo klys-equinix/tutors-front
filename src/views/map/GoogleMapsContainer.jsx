@@ -1,5 +1,5 @@
-import React, {Component} from "react";
-import {Map, InfoWindow, Marker, GoogleApiWrapper} from "google-maps-react";
+import React, {Component, Fragment} from "react";
+import {Map, Marker, GoogleApiWrapper} from "google-maps-react";
 import {withStyles} from "@material-ui/core";
 import Button from "@material-ui/core/Button/Button";
 import Modal from "@material-ui/core/Modal";
@@ -9,6 +9,11 @@ import CreateProfileForm from "./CreateProfileForm";
 import {InfoWindowEx} from "./InfoWindowEx";
 import {getProfiles} from "./getProfiles";
 import {CurrentUserRepository} from "../../data/CurrentUserRepository";
+import Typography from "@material-ui/core/Typography";
+import Circle from "./Circle";
+import circle from "../../circle.png"
+import createCricle from "../../createCircle.png"
+
 
 const styles = theme => ({
     addProfile: {
@@ -47,6 +52,8 @@ class MapContainer extends Component {
             showingProfileCreationButton: false,
             showingProfileCreationWindow: false,
             profileCreationMarker: {},
+            clickedTutorMarker: null,
+            clickedTutorEmail: {},
             selectedPlace: {},
             profileCreationMarkerPosition: {},
             tutors: [],
@@ -59,6 +66,13 @@ class MapContainer extends Component {
             selectedPlace: props,
             profileCreationMarker: marker,
             showingProfileCreationButton: true
+        });
+    };
+
+    onTutorMarkerClick = (props, marker, e) => {
+        this.setState({
+            clickedTutorMarker: marker,
+            clickedTutorEmail: props.title
         });
     };
 
@@ -81,8 +95,10 @@ class MapContainer extends Component {
     fetchPlaces = (mapProps, map) => {
         const {google} = mapProps;
         this.setState({currentUser: CurrentUserRepository.readCurrentUser()});
-        getProfiles(52.237049, 21.017532, 10)
-            .then(resp => this.setState({tutors: resp.data}));
+        getProfiles(52.237049, 21.017528, 10)
+            .then(resp => {
+                this.setState({tutors: resp.data})
+            });
     };
 
     onClose = () => {
@@ -95,16 +111,20 @@ class MapContainer extends Component {
 
     render() {
         const {
-            classes
+            classes,
+            google
         } = this.props;
 
         const {
-            currentUser
+            currentUser,
+            clickedTutorMarker,
+            clickedTutorEmail
         } = this.state;
 
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
+
         return (
             <div
                 style={{
@@ -119,11 +139,11 @@ class MapContainer extends Component {
                     zoom={14}
                     center={{
                         lat: 52.237049,
-                        lng: 21.017532
+                        lng: 21.017528
                     }}
                     initialCenter={{
                         lat: 52.237049,
-                        lng: 21.017532
+                        lng: 21.017528
                     }}
                     onClick={this.onMapClicked}
                     onReady={this.fetchPlaces}
@@ -131,6 +151,11 @@ class MapContainer extends Component {
                     <Marker
                         onClick={this.onMarkerClick}
                         position={this.state.profileCreationMarkerPosition}
+                        icon={{
+                            url: createCricle,
+                            anchor: new google.maps.Point(28,28),
+                            scaledSize: new google.maps.Size(28,28)
+                        }}
                     />
                     <InfoWindowEx
                         marker={this.state.profileCreationMarker}
@@ -171,11 +196,20 @@ class MapContainer extends Component {
                     {
                         this.state.tutors.map(tutor => {
                             if (tutor.email !== currentUser.email) {
-                                this.renderAvailableTutorMarker(tutor)
-                            } else {
-                                this.renderAvailableTutorMarker(tutor)
+                                return this.renderAvailableTutorMarker(tutor)
                             }
                         })
+                    }
+                    {
+                        this.state.tutors.map(tutor => {
+                            if (tutor.email !== currentUser.email) {
+                                return this.renderAvailableTutorCircle(tutor)
+                            }
+                        })
+                    }
+                    {
+                        clickedTutorMarker &&
+                        this.renderAvailableTutorWindow(clickedTutorEmail)
                     }
                 </Map>
                 <Modal open={this.state.showingProfileCreationWindow} onClose={this.onClose}>
@@ -190,23 +224,69 @@ class MapContainer extends Component {
 
     renderAvailableTutorMarker = (tutor) => {
         const {
-            classes
+            google
         } = this.props;
-        console.log(tutor)
+
         return (
             <Marker
                 title={tutor.email}
                 position={{lat: tutor.profile.lat, lng: tutor.profile.lng}}
+                onClick={this.onTutorMarkerClick}
+                icon={{
+                    url: circle,
+                    anchor: new google.maps.Point(28,28),
+                    scaledSize: new google.maps.Size(28,28)
+                }}
+            />
+        );
+    };
+
+    renderAvailableTutorCircle = (tutor) => {
+        return (
+            <Circle
+                radius={tutor.profile.range * 1000}
+                center={{lat: tutor.profile.lat, lng: tutor.profile.lng}}
+                strokeColor='transparent'
+                strokeOpacity={0}
+                strokeWeight={5}
+                fillColor='#4286f4'
+                fillOpacity={0.2}
+            />
+        );
+    }
+
+    renderAvailableTutorWindow = () => {
+        const {
+            classes
+        } = this.props;
+        const {
+            tutors,
+            clickedTutorEmail,
+            clickedTutorMarker,
+        } = this.state;
+
+        let tutor = tutors.find((el) => el.email === clickedTutorEmail);
+
+        return (
+            <InfoWindowEx
+                visible={true}
+                style={classes.tutorInfo}
+                marker={clickedTutorMarker}
             >
-                {/*<InfoWindow*/}
-                {/*    visible={true}*/}
-                {/*    style={classes.tutorInfo}*/}
-                {/*>*/}
-                {/*    <div>*/}
-                {/*        {tutor.details.lastName}*/}
-                {/*    </div>*/}
-                {/*</InfoWindow>*/}
-            </Marker>
+                <Fragment>
+                    <Typography variant="caption" gutterBottom align="center">
+                        {tutor.details.firstName + ' ' + tutor.details.lastName}
+                    </Typography>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.addProfile}
+                    >
+                        Zobacz szczegóły
+                    </Button>
+                </Fragment>
+            </InfoWindowEx>
         );
     }
 }
