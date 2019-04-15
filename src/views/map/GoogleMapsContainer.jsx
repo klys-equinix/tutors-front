@@ -172,8 +172,8 @@ class MapContainer extends Component {
                         position={profileCreationMarkerPosition ? profileCreationMarkerPosition : currentLocation}
                         icon={{
                             url: createCricle,
-                            anchor: new google.maps.Point(28, 28),
-                            scaledSize: new google.maps.Size(28, 28)
+                            anchor: new google.maps.Point(22, 22),
+                            scaledSize: new google.maps.Size(22, 22)
                         }}
                     />
                     <InfoWindowEx
@@ -253,8 +253,8 @@ class MapContainer extends Component {
                 onClick={this.onTutorMarkerClick}
                 icon={{
                     url: circle,
-                    anchor: new google.maps.Point(28, 28),
-                    scaledSize: new google.maps.Size(28, 28)
+                    anchor: new google.maps.Point(22, 22),
+                    scaledSize: new google.maps.Size(22, 22)
                 }}
             />
         );
