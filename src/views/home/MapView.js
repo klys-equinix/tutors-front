@@ -26,6 +26,7 @@ import Levels from "../../dict/Levels";
 import Discipline from "../../dict/Discipline";
 import Select from "@material-ui/core/Select";
 import {TextField} from "@material-ui/core";
+import FloatInput from "../../input/FloatInput";
 
 const styles = theme => ({
     root: {
@@ -121,7 +122,8 @@ class MapView extends React.Component {
             level: Levels.ELEMENTARY,
             discipline: Discipline.POLISH,
             customName: '',
-            hourlyRate: 0,
+            hourlyRate: null,
+            radius: null,
         }
     };
 
@@ -237,12 +239,29 @@ class MapView extends React.Component {
                                     id="hourlyRate"
                                     placeholder="Cena za godzinę"
                                     value={courseSearch.hourlyRate}
+                                    type={"number"}
                                     onChange={(e) => {
                                         const val = e.target.value;
                                         this.setState(prevState => ({
                                             courseSearch: {
                                                 ...prevState.courseSearch,
                                                 hourlyRate: val
+                                            }
+                                        }))
+                                    }}/>
+                            </div>
+                            <div className={classes.search}>
+                                <TextField
+                                    id="radius"
+                                    placeholder="Promień"
+                                    value={courseSearch.radius}
+                                    type={"number"}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        this.setState(prevState => ({
+                                            courseSearch: {
+                                                ...prevState.courseSearch,
+                                                radius: val
                                             }
                                         }))
                                     }}/>
@@ -268,7 +287,9 @@ class MapView extends React.Component {
                     {renderMenu}
                 </Grid>
                 <Grid item xs={12}>
-                    <GoogleMapsContainer/>
+                    <GoogleMapsContainer
+                        searchParams={courseSearch}
+                    />
                 </Grid>
             </Grid>
         )

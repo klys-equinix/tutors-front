@@ -46,6 +46,11 @@ const styles = theme => ({
     }
 });
 
+const initialCenter = {
+    lat: 52.237049,
+    lng: 21.017528
+}
+
 class MapContainer extends Component {
     constructor(props) {
         super(props);
@@ -98,6 +103,10 @@ class MapContainer extends Component {
         debugger
     }
 
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.fetchWithNewParams(nextProps.searchParams)
+    }
+
     componentDidMount() {
         if (navigator && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
@@ -106,19 +115,40 @@ class MapContainer extends Component {
                     currentLocation: {
                         lat: coords.latitude,
                         lng: coords.longitude
-                    }
+                    },
+                    currentUser: CurrentUserRepository.readCurrentUser()
                 })
             })
         }
     }
 
-    fetchPlaces = (mapProps, map) => {
-        const {google} = mapProps;
-        this.setState({currentUser: CurrentUserRepository.readCurrentUser()});
-        getProfiles(52.237049, 21.017528, 10, 'ELEMENTARY')
-            .then(resp => {
-                this.setState({tutors: resp.data})
-            });
+    fetchPlaces = () => {
+        const { searchParams } = this.props;
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const navCoords = pos.coords;
+            const coords = {
+                lat: navCoords.latitude ? navCoords.latitude : initialCenter.lat,
+                lng: navCoords.longitude ? navCoords.longitude : initialCenter.lng
+            };
+            getProfiles(coords.lat, coords.lng, searchParams)
+                .then(resp => {
+                    this.setState({tutors: resp.data})
+                });
+        });
+    };
+
+    fetchWithNewParams = (searchParams) => {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const navCoords = pos.coords;
+            const coords = {
+                lat: navCoords.latitude ? navCoords.latitude : initialCenter.lat,
+                lng: navCoords.longitude ? navCoords.longitude : initialCenter.lng
+            };
+            getProfiles(coords.lat, coords.lng, searchParams)
+                .then(resp => {
+                    this.setState({tutors: resp.data})
+                });
+        });
     };
 
     onClose = () => {
@@ -159,10 +189,7 @@ class MapContainer extends Component {
                     style={{}}
                     google={this.props.google}
                     center={this.state.currentLocation}
-                    initialCenter={{
-                        lat: 52.237049,
-                        lng: 21.017528
-                    }}
+                    initialCenter={initialCenter}
                     onClick={this.onMapClicked}
                     onReady={this.fetchPlaces}
                     onZoomChanged={this.zoomed}

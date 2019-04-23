@@ -20,6 +20,7 @@ import Discipline from "../../dict/Discipline";
 import IconButton from "@material-ui/core/IconButton";
 import Icon from "@material-ui/core/Icon";
 import {addProfile} from "./addProfile";
+import {getKeyByValue} from "../../utils/valFinder";
 
 const styles = theme => ({
     control: {
@@ -98,10 +99,6 @@ class CreateProfileForm extends Component {
         })
     };
 
-    getKeyByValue = (object, value) => {
-        return Object.keys(object).find(key => object[key] === value);
-    };
-
     handleSubmit(event) {
         event.preventDefault();
         const {handleClose, userCoords} = this.props;
@@ -114,8 +111,8 @@ class CreateProfileForm extends Component {
         const coursesToSubmit = [];
         Object.keys(courses).map(rowKey => {
             courses[rowKey].map(subRow => {
-                subRow.level = this.getKeyByValue(Levels, subRow.level);
-                subRow.discipline = this.getKeyByValue(Discipline, subRow.discipline);
+                subRow.level = getKeyByValue(Levels, subRow.level);
+                subRow.discipline = getKeyByValue(Discipline, subRow.discipline);
                 coursesToSubmit.push(subRow);
             })
         });
