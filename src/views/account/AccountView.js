@@ -111,7 +111,9 @@ class AccountView extends React.Component {
     };
 
     fetchData = () => {
-        getCurrentUser().then(() => this.setState({account: CurrentUserRepository.readCurrentUser(), ready: true}));
+        getCurrentUser().then((data) => {
+            this.setState({account: data, ready: true})
+        });
     };
 
     componentDidMount() {

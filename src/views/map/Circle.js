@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {arePathsEqual} from './arePathsEqual'
+import {arePathsEqual} from './modals/arePathsEqual'
 const camelize = function(str) {
     return str.split(' ').map(function(word) {
         return word.charAt(0).toUpperCase() + word.slice(1);

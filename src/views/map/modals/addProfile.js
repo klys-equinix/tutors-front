@@ -1,4 +1,4 @@
-import {Api} from "../../api/Api";
+import {Api} from "../../../api/Api";
 import * as config from "react-global-configuration";
 
 

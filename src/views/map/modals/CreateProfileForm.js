@@ -9,18 +9,18 @@ import {TableCell, TextField, withStyles} from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox/Checkbox";
 import Grid from "@material-ui/core/Grid/Grid";
 import classNames from "classnames";
-import Typography from "@material-ui/core/Typography";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@material-ui/core/TableBody";
-import Levels from "../../dict/Levels";
-import Discipline from "../../dict/Discipline";
-import IconButton from "@material-ui/core/IconButton";
-import Icon from "@material-ui/core/Icon";
+import Typography from "@material-ui/core/Typography/index";
+import FormControlLabel from "@material-ui/core/FormControlLabel/index";
+import Table from "@material-ui/core/Table/index";
+import TableHead from "@material-ui/core/TableHead/index";
+import TableRow from "@material-ui/core/TableRow/index";
+import TableBody from "@material-ui/core/TableBody/index";
+import Levels from "../../../dict/Levels";
+import Discipline from "../../../dict/Discipline";
+import IconButton from "@material-ui/core/IconButton/index";
+import Icon from "@material-ui/core/Icon/index";
 import {addProfile} from "./addProfile";
-import {getKeyByValue} from "../../utils/valFinder";
+import {getKeyByValue} from "../../../utils/valFinder";
 
 const styles = theme => ({
     control: {

@@ -5,7 +5,7 @@ import Button from "@material-ui/core/Button/Button";
 import Modal from "@material-ui/core/Modal";
 import classNames from "classnames";
 import Paper from "@material-ui/core/Paper";
-import CreateProfileForm from "./CreateProfileForm";
+import CreateProfileForm from "./modals/CreateProfileForm";
 import {InfoWindowEx} from "./InfoWindowEx";
 import {getProfiles} from "./getProfiles";
 import {CurrentUserRepository} from "../../data/CurrentUserRepository";
@@ -14,6 +14,7 @@ import Circle from "./Circle";
 import circle from "../../circle.png"
 import createCricle from "../../createCircle.png"
 import Levels from "../../dict/Levels";
+import CreateOfferForm from "./modals/CreateOfferForm";
 
 
 const styles = theme => ({
@@ -22,7 +23,7 @@ const styles = theme => ({
     },
     paper: {
         position: 'absolute',
-        width: theme.spacing.unit * 150,
+        width: '80%',
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
         padding: theme.spacing.unit * 4,
@@ -57,6 +58,8 @@ class MapContainer extends Component {
         this.state = {
             showingProfileCreationButton: false,
             showingProfileCreationWindow: false,
+            showingOfferCreationWindow: false,
+            tutorForOffer: {},
             profileCreationMarker: {},
             clickedTutorMarker: null,
             clickedTutorEmail: {},
@@ -152,11 +155,15 @@ class MapContainer extends Component {
     };
 
     onClose = () => {
-        this.setState({showingProfileCreationWindow: false, showingProfileCreationButton: false})
+        this.setState({showingProfileCreationWindow: false, showingProfileCreationButton: false, showingOfferCreationWindow: false})
     };
 
-    onOpen = () => {
+    onProfileCreationOpen = () => {
         this.setState({showingProfileCreationWindow: true})
+    };
+
+    onOfferCreationOpen = (tutor) => {
+        this.setState({showingOfferCreationWindow: true, tutorForOffer: tutor})
     };
 
     render() {
@@ -221,7 +228,7 @@ class MapContainer extends Component {
                                                 variant="contained"
                                                 color="primary"
                                                 className={classes.addProfile}
-                                                onClick={this.onOpen}
+                                                onClick={this.onProfileCreationOpen}
                                             >
                                                 Stwórz profil z tą lokalizacją
                                             </Button>
@@ -262,6 +269,12 @@ class MapContainer extends Component {
                     <Paper className={classNames(classes.paper, classes.modal)}>
                         <CreateProfileForm handleClose={this.onClose}
                                            userCoords={this.state.profileCreationMarkerPosition}/>
+                    </Paper>
+                </Modal>
+                <Modal open={this.state.showingOfferCreationWindow} onClose={this.onClose}>
+                    <Paper className={classNames(classes.paper, classes.modal)}>
+                        <CreateOfferForm handleClose={this.onClose}
+                                           account={this.state.tutorForOffer}/>
                     </Paper>
                 </Modal>
             </div>
@@ -328,6 +341,7 @@ class MapContainer extends Component {
                         variant="contained"
                         color="primary"
                         className={classes.addProfile}
+                        onClick={() => this.onOfferCreationOpen(tutor)}
                     >
                         Zobacz szczegóły
                     </Button>

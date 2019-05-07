@@ -6,12 +6,10 @@ import Discipline from "../../dict/Discipline";
 
 export const getProfiles = async (lat, lng, searchParams) => {
   try {
-    console.log(searchParams)
     const url = `${config.get('apiUrl')}/user/tutor-profile?lat=${lat}&lng=${lng}`;
     const resp = await Api.get(buildUrl(url, searchParams));
     return resp;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
