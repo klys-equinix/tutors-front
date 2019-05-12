@@ -15,6 +15,7 @@ import circle from "../../circle.png"
 import createCricle from "../../createCircle.png"
 import Levels from "../../dict/Levels";
 import CreateOfferForm from "./modals/CreateOfferForm";
+import {getCurrentUser} from "../login/getCurrentUser";
 
 
 const styles = theme => ({
@@ -113,20 +114,22 @@ class MapContainer extends Component {
     componentDidMount() {
         if (navigator && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
-                const coords = pos.coords;
-                this.setState({
-                    currentLocation: {
-                        lat: coords.latitude,
-                        lng: coords.longitude
-                    },
-                    currentUser: CurrentUserRepository.readCurrentUser()
+                getCurrentUser().then(c => {
+                    const coords = pos.coords;
+                    this.setState({
+                        currentLocation: {
+                            lat: coords.latitude,
+                            lng: coords.longitude
+                        },
+                        currentUser: c
+                    })
                 })
             })
         }
     }
 
     fetchPlaces = () => {
-        const { searchParams } = this.props;
+        const {searchParams} = this.props;
         navigator.geolocation.getCurrentPosition((pos) => {
             const navCoords = pos.coords;
             const coords = {
@@ -155,7 +158,11 @@ class MapContainer extends Component {
     };
 
     onClose = () => {
-        this.setState({showingProfileCreationWindow: false, showingProfileCreationButton: false, showingOfferCreationWindow: false})
+        this.setState({
+            showingProfileCreationWindow: false,
+            showingProfileCreationButton: false,
+            showingOfferCreationWindow: false
+        })
     };
 
     onProfileCreationOpen = () => {
@@ -274,7 +281,7 @@ class MapContainer extends Component {
                 <Modal open={this.state.showingOfferCreationWindow} onClose={this.onClose}>
                     <Paper className={classNames(classes.paper, classes.modal)}>
                         <CreateOfferForm handleClose={this.onClose}
-                                           account={this.state.tutorForOffer}/>
+                                         account={this.state.tutorForOffer}/>
                     </Paper>
                 </Modal>
             </div>
@@ -351,8 +358,16 @@ class MapContainer extends Component {
     }
 }
 
-export default withStyles(styles)(GoogleApiWrapper({
-    apiKey: "AIzaSyBsaVGmYMB4M3iQ8UniR0xMHSscgjOFSu4",
-    v: "3.30"
-})(MapContainer));
+export default withStyles(styles)
+
+(
+    GoogleApiWrapper({
+        apiKey: "AIzaSyBsaVGmYMB4M3iQ8UniR0xMHSscgjOFSu4",
+        v: "3.30"
+    })
+
+    (
+        MapContainer
+    ))
+;
 

@@ -31,6 +31,10 @@ import Levels from "../../dict/Levels";
 import Discipline from "../../dict/Discipline";
 import {CurrentUserRepository} from "../../data/CurrentUserRepository";
 import {getCurrentUser} from "../login/getCurrentUser";
+import CreateOfferForm from "../map/modals/CreateOfferForm";
+import Modal from "@material-ui/core/Modal";
+import ShowOffersForm from "./modals/ShowOffersForm";
+import ShowCoursesForm from "./modals/ShowCoursesForm";
 
 const styles = theme => ({
     mainContainer: {
@@ -85,6 +89,17 @@ const styles = theme => ({
         height: 140,
         width: 100,
     },
+    modal: {
+        top: `50%`,
+        left: `50%`,
+        transform: `translate(-50%, -50%)`,
+        position: 'absolute',
+        width: '80%',
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 4,
+        outline: 'none',
+    },
 });
 
 class AccountView extends React.Component {
@@ -94,6 +109,15 @@ class AccountView extends React.Component {
         account: null,
         ready: false,
         showDetailsModal: false,
+        showingOffersModal: false,
+        showingLessonsModal: false,
+    };
+
+    onClose = () => {
+        this.setState({
+            showingOffersModal: false,
+            showingLessonsModal: false,
+        })
     };
 
     handleProfileMenuOpen = event => {
@@ -290,6 +314,8 @@ class AccountView extends React.Component {
                                                 <TableCell>Przedmiot</TableCell>
                                                 <TableCell>Nazwa własna</TableCell>
                                                 <TableCell>Cena za godzine</TableCell>
+                                                <TableCell>Oferty</TableCell>
+                                                <TableCell>Zajęcia</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -302,6 +328,26 @@ class AccountView extends React.Component {
                                                         <TableCell>{Discipline[course.discipline]}</TableCell>
                                                         <TableCell>{course.customName}</TableCell>
                                                         <TableCell>{course.hourlyRate}</TableCell>
+                                                        <TableCell>
+                                                            <Button
+                                                                fullWidth
+                                                                variant="contained"
+                                                                color="primary"
+                                                                onClick={() => this.setState({showingOffersModal: true})}
+                                                            >
+                                                                Pokaż oferty
+                                                            </Button>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Button
+                                                                fullWidth
+                                                                variant="contained"
+                                                                color="primary"
+                                                                onClick={() => this.setState({showingLessonsModal: true})}
+                                                            >
+                                                                Pokaż lekcje
+                                                            </Button>
+                                                        </TableCell>
                                                     </TableRow>
                                                 )
                                             })}
@@ -309,6 +355,18 @@ class AccountView extends React.Component {
                                     </Table>
                                 </Grid>
                             </Grid>
+                            <Modal open={this.state.showingOffersModal} onClose={this.onClose}>
+                                <Paper className={classes.modal}>
+                                    <ShowOffersForm handleClose={this.onClose}
+                                                     courses={account.profile.courses} refetch={this.fetchData}/>
+                                </Paper>
+                            </Modal>
+                            <Modal open={this.state.showingLessonsModal} onClose={this.onClose}>
+                                <Paper className={classes.modal}>
+                                    <ShowCoursesForm handleClose={this.onClose}
+                                                    courses={account.profile.courses}/>
+                                </Paper>
+                            </Modal>
                         </Paper>
                     )
                     :

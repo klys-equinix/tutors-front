@@ -7,7 +7,6 @@ export const getCurrentUser = async () => {
   try {
     const currentUserResp = await Api.get(`${config.get('apiUrl')}/user/current`);
     let data = currentUserResp.data;
-    CurrentUserRepository.saveCurrentUser(currentUserResp.data);
     return data;
   } catch (e) {
     console.log(e);

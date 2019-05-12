@@ -1,15 +1,9 @@
 import React, {Component, Fragment} from "react";
-import FormControl from "@material-ui/core/FormControl/FormControl";
 import InputLabel from "@material-ui/core/InputLabel/InputLabel";
-import Input from "@material-ui/core/Input/Input";
 import Button from "@material-ui/core/Button/Button";
-import Select from "@material-ui/core/Select/Select";
-import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import {TableCell, TextField, withStyles} from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox/Checkbox";
 import Grid from "@material-ui/core/Grid/Grid";
 import classNames from "classnames";
-import Typography from "@material-ui/core/Typography/index";
 import FormControlLabel from "@material-ui/core/FormControlLabel/index";
 import Table from "@material-ui/core/Table/index";
 import TableHead from "@material-ui/core/TableHead/index";
@@ -17,15 +11,15 @@ import TableRow from "@material-ui/core/TableRow/index";
 import TableBody from "@material-ui/core/TableBody/index";
 import Levels from "../../../dict/Levels";
 import Discipline from "../../../dict/Discipline";
-import IconButton from "@material-ui/core/IconButton/index";
-import Icon from "@material-ui/core/Icon/index";
-import {addProfile} from "./addProfile";
-import {getKeyByValue} from "../../../utils/valFinder";
 import ReactPlaceholder from "react-placeholder";
 import Paper from "@material-ui/core/Paper";
-import CreateAccountDetailsForm from "../../account/CreateAccountDetailsForm";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
+import TimeInput from 'material-ui-time-picker'
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import {createOffer} from "../createOffer";
+
 
 const styles = theme => ({
     control: {
@@ -39,14 +33,24 @@ const styles = theme => ({
         float: 'right'
     },
     table: {
-        minWidth: 700,
+        minWidth: '80%',
     },
     row: {
         '&:nth-of-type(odd)': {
             secondary: theme.palette.primary.main,
         },
-    },
+    }
 });
+
+const days = [
+    'Poniedziałek',
+    'Wtorek',
+    'Środa',
+    'Czwartek',
+    'Piątek',
+    'Sobota',
+    'Niedziela'
+]
 
 class CreateOfferForm extends Component {
     constructor() {
@@ -55,11 +59,9 @@ class CreateOfferForm extends Component {
         this.state = {
             tutorsPlaceAvailable: true,
             courses: {},
-            currentCourse: {
-                level: Levels.ELEMENTARY,
-                discipline: Discipline.POLISH,
-                customName: '',
-                hourlyRate: 0,
+            offer: {
+                hour: new Date(),
+                day: days[0]
             }
         }
     }
@@ -69,11 +71,31 @@ class CreateOfferForm extends Component {
     }
 
     handleSubmit(event) {
+        const {
+            offer,
+            pickedCourse
+        } = this.state;
+
+        const {
+            handleClose
+        } = this.props;
         event.preventDefault();
+        createOffer(pickedCourse, offer).then(handleClose)
     }
 
+    setOfferTime(time) {
+        this.setState(prevState => ({
+            offer: {
+                ...prevState.offer,
+                hour: time
+            }
+        }))
+    }
+
+
+
     render() {
-        const {classes, account} = this.props;
+        const {classes} = this.props;
 
         return (
             <Fragment>
@@ -81,13 +103,14 @@ class CreateOfferForm extends Component {
                     <Grid container>
                         <Grid item xs={12} className={classes.control}>
                             {this.renderDetails()}
-                            {this.renderAddProfile()}
+                            {this.renderProfileDetails()}
                         </Grid>
                         <Grid xs={6} item>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 type={"submit"}
+                                onClick={this.handleSubmit}
                                 className={classNames(classes.button, classes.submit)}
                             >
                                 Złóż ofertę
@@ -142,13 +165,13 @@ class CreateOfferForm extends Component {
         );
     }
 
-    renderAddProfile() {
+    renderProfileDetails() {
         const {
             account,
             classes
         } = this.props;
 
-        return <Grid item xs={12} className={classNames(classes.control, classes.userDetails)} justify={'center'}>
+        return <Grid item xs={12} className={classNames(classes.control)} justify={'center'}>
             <ReactPlaceholder type='text' rows={1} ready={account}>
                 <Paper className={classes.paper}>
                     <Grid container justify="center">
@@ -172,8 +195,8 @@ class CreateOfferForm extends Component {
                             <br/>
                             <RadioGroup
                                 name="discipline"
-                                value={this.state.value}
-                                onChange={this.handleChange}
+                                value={this.state.pickedCourse}
+                                onChange={(e) => this.setState({pickedCourse: e.target.value})}
                             >
                                 <Table>
                                     <TableHead>
@@ -182,6 +205,8 @@ class CreateOfferForm extends Component {
                                             <TableCell>Przedmiot</TableCell>
                                             <TableCell>Nazwa własna</TableCell>
                                             <TableCell>Cena za godzine</TableCell>
+                                            <TableCell>Dzień</TableCell>
+                                            <TableCell>Godzina</TableCell>
                                             <TableCell>Wybierz</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -196,7 +221,29 @@ class CreateOfferForm extends Component {
                                                     <TableCell>{course.customName}</TableCell>
                                                     <TableCell>{course.hourlyRate}</TableCell>
                                                     <TableCell>
-                                                        <FormControlLabel value={course.discipline} control={<Radio />} />
+                                                        <Select
+                                                            value={this.state.offer.day}
+                                                            onChange={(event) => {
+                                                                this.setState(prevState => ({
+                                                                    offer: {
+                                                                        ...prevState.offer,
+                                                                        day: event.target.value
+                                                                    }
+                                                                }))
+                                                            }}
+                                                        >
+                                                            {Object.values(days).map(val => <MenuItem
+                                                                value={val}>{val}</MenuItem>)}
+                                                        </Select>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TimeInput
+                                                            mode='24h'
+                                                            onChange={(time) => this.setOfferTime(time)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FormControlLabel value={course.id} control={<Radio />} />
                                                     </TableCell>
                                                 </TableRow>
                                             )
