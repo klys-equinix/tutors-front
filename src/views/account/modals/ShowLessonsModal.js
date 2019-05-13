@@ -35,7 +35,7 @@ const styles = theme => ({
 });
 
 
-class ShowOffersForm extends Component {
+class ShowLessonsModal extends Component {
     constructor() {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -78,16 +78,15 @@ class ShowOffersForm extends Component {
 
     renderOffers() {
         const {
-            courses,
-            classes,
-            refetch
+            lessons,
+            classes
         } = this.props;
         return <Grid item xs={12} className={classNames(classes.control)} justify={'center'}>
-            <ReactPlaceholder type='text' rows={1} ready={courses}>
+            <ReactPlaceholder type='text' rows={1} ready={lessons}>
                 <Paper className={classes.paper}>
                     <Grid container justify="center">
                         <Grid item xs={12} className={classes.control} spacing={12}>
-                            <InputLabel>Oferty: </InputLabel>
+                            <InputLabel>Lekcje: </InputLabel>
                             <br/>
                             <Table>
                                 <TableHead>
@@ -95,29 +94,17 @@ class ShowOffersForm extends Component {
                                         <TableCell>Dzień</TableCell>
                                         <TableCell>Godzina</TableCell>
                                         <TableCell>Dane klienta</TableCell>
-                                        <TableCell>Akceptuj</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {courses.filter(c => c.offers.length !== 0).flatMap(course => course.offers).map(offer => {
-                                        console.log(offer)
+                                    {lessons.map(offer => {
                                         return (
                                             <TableRow>
                                                 <TableCell component="th" scope="row">
                                                     {offer.day}
                                                 </TableCell>
                                                 <TableCell>{offer.hour}</TableCell>
-                                                <TableCell>{offer.createdBy.email}</TableCell>
-                                                <TableCell>
-                                                    <Button
-                                                        fullWidth
-                                                        variant="contained"
-                                                        color="primary"
-                                                        onClick={() => acceptOffer(offer.id).then(refetch)}
-                                                    >
-                                                        Akceptuj
-                                                    </Button>
-                                                </TableCell>
+                                                <TableCell>{offer.student.email}</TableCell>
                                             </TableRow>
                                         )
                                     })}
@@ -132,4 +119,4 @@ class ShowOffersForm extends Component {
 
 };
 
-export default withStyles(styles)(ShowOffersForm);
+export default withStyles(styles)(ShowLessonsModal);

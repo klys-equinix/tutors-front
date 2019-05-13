@@ -35,7 +35,7 @@ const styles = theme => ({
 });
 
 
-class ShowCoursesForm extends Component {
+class ShowOffersModal extends Component {
     constructor() {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -78,11 +78,13 @@ class ShowCoursesForm extends Component {
 
     renderOffers() {
         const {
-            courses,
-            classes
+            offers,
+            classes,
+            refetch,
+            editable
         } = this.props;
         return <Grid item xs={12} className={classNames(classes.control)} justify={'center'}>
-            <ReactPlaceholder type='text' rows={1} ready={courses}>
+            <ReactPlaceholder type='text' rows={1} ready={offers}>
                 <Paper className={classes.paper}>
                     <Grid container justify="center">
                         <Grid item xs={12} className={classes.control} spacing={12}>
@@ -94,17 +96,29 @@ class ShowCoursesForm extends Component {
                                         <TableCell>Dzień</TableCell>
                                         <TableCell>Godzina</TableCell>
                                         <TableCell>Dane klienta</TableCell>
+                                        {editable && <TableCell>Akceptuj</TableCell>}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {courses.filter(c => c.lessons.length !== 0).flatMap(course => course.lessons).map(offer => {
+                                    {offers.map(offer => {
                                         return (
                                             <TableRow>
                                                 <TableCell component="th" scope="row">
                                                     {offer.day}
                                                 </TableCell>
                                                 <TableCell>{offer.hour}</TableCell>
-                                                <TableCell>{offer.student.email}</TableCell>
+                                                <TableCell>{offer.createdBy.email}</TableCell>
+                                                {editable && <TableCell>
+                                                    <Button
+                                                        fullWidth
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={() => acceptOffer(offer.id).then(refetch)}
+                                                    >
+                                                        Akceptuj
+                                                    </Button>
+                                                </TableCell>
+                                                }
                                             </TableRow>
                                         )
                                     })}
@@ -119,4 +133,4 @@ class ShowCoursesForm extends Component {
 
 };
 
-export default withStyles(styles)(ShowCoursesForm);
+export default withStyles(styles)(ShowOffersModal);

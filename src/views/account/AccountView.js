@@ -33,8 +33,10 @@ import {CurrentUserRepository} from "../../data/CurrentUserRepository";
 import {getCurrentUser} from "../login/getCurrentUser";
 import CreateOfferForm from "../map/modals/CreateOfferForm";
 import Modal from "@material-ui/core/Modal";
-import ShowOffersForm from "./modals/ShowOffersForm";
-import ShowCoursesForm from "./modals/ShowCoursesForm";
+import ShowOffersModal from "./modals/ShowOffersModal";
+import ShowLessonsModal from "./modals/ShowLessonsModal";
+import {getMyLessons} from "./modals/getMyLessons";
+import {getMyOffers} from "./modals/getMyOffers";
 
 const styles = theme => ({
     mainContainer: {
@@ -60,6 +62,7 @@ const styles = theme => ({
     },
     gridItem: {
         padding: theme.spacing.unit,
+        marginBottom: theme.spacing.unit
     },
     header: {
         fontSize: '40px',
@@ -111,12 +114,18 @@ class AccountView extends React.Component {
         showDetailsModal: false,
         showingOffersModal: false,
         showingLessonsModal: false,
+        showingMyLessonsModal: false,
+        showingMyOffersModal: false,
+        lessons: [],
+        offers: []
     };
 
     onClose = () => {
         this.setState({
             showingOffersModal: false,
             showingLessonsModal: false,
+            showingMyLessonsModal: false,
+            showingMyOffersModal: false,
         })
     };
 
@@ -138,6 +147,14 @@ class AccountView extends React.Component {
         getCurrentUser().then((data) => {
             this.setState({account: data, ready: true})
         });
+
+        getMyLessons().then((data) => {
+            this.setState({lessons: data})
+        })
+
+        getMyOffers().then((data) => {
+            this.setState({offers: data})
+        })
     };
 
     componentDidMount() {
@@ -221,6 +238,8 @@ class AccountView extends React.Component {
             account,
             ready,
             showDetailsModal,
+            lessons,
+            offers,
         } = this.state;
         const {classes} = this.props;
         return (
@@ -230,20 +249,40 @@ class AccountView extends React.Component {
                         (
                             <Paper className={classes.paper}>
                                 <Grid container justify="center">
-                                    <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <Grid item xs={4} className={classes.gridItem} spacing={12}>
                                         <InputLabel>Imię: </InputLabel>
                                         <br/>
                                         {account.details.firstName}
                                     </Grid>
-                                    <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <Grid item xs={4} className={classes.gridItem} spacing={12}>
                                         <InputLabel>Nazwisko: </InputLabel>
                                         <br/>
                                         {account.details.lastName}
                                     </Grid>
-                                    <Grid item xs={12} className={classes.gridItem} spacing={12}>
+                                    <Grid item xs={4} className={classes.gridItem} spacing={12}>
                                         <InputLabel>Numer telefonu: </InputLabel>
                                         <br/>
                                         {account.details.phoneNumber}
+                                    </Grid>
+                                    <Grid item xs={2} className={classes.gridItem} spacing={12}>
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.setState({showingMyLessonsModal: true})}
+                                        >
+                                            Pokaż lekcje
+                                        </Button>
+                                    </Grid>
+                                    <Grid item xs={2} className={classes.gridItem} spacing={12}>
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.setState({showingMyOffersModal: true})}
+                                        >
+                                            Pokaż oferty
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Paper>
@@ -272,6 +311,22 @@ class AccountView extends React.Component {
                                 </Fragment>
                         )
                     }
+                    <Modal open={this.state.showingMyOffersModal} onClose={this.onClose}>
+                        <Paper className={classes.modal}>
+                            <ShowOffersModal
+                                handleClose={this.onClose}
+                                offers={offers}
+                                refetch={this.fetchData}
+                                editable={false}
+                            />
+                        </Paper>
+                    </Modal>
+                    <Modal open={this.state.showingMyLessonsModal} onClose={this.onClose}>
+                        <Paper className={classes.modal}>
+                            <ShowLessonsModal handleClose={this.onClose}
+                                              lessons={lessons}/>
+                        </Paper>
+                    </Modal>
                 </ReactPlaceholder>
             </Grid>
         );
@@ -357,14 +412,20 @@ class AccountView extends React.Component {
                             </Grid>
                             <Modal open={this.state.showingOffersModal} onClose={this.onClose}>
                                 <Paper className={classes.modal}>
-                                    <ShowOffersForm handleClose={this.onClose}
-                                                     courses={account.profile.courses} refetch={this.fetchData}/>
+                                    <ShowOffersModal
+                                        handleClose={this.onClose}
+                                        offers={account.profile.courses.filter(c => c.offers.length !== 0).flatMap(course => course.offers)}
+                                        refetch={this.fetchData}
+                                        editable={true}
+                                    />
                                 </Paper>
                             </Modal>
                             <Modal open={this.state.showingLessonsModal} onClose={this.onClose}>
                                 <Paper className={classes.modal}>
-                                    <ShowCoursesForm handleClose={this.onClose}
-                                                    courses={account.profile.courses}/>
+                                    <ShowLessonsModal
+                                        handleClose={this.onClose}
+                                        lessons={account.profile.courses.filter(c => c.lessons.length !== 0).flatMap(course => course.lessons)}
+                                    />
                                 </Paper>
                             </Modal>
                         </Paper>
