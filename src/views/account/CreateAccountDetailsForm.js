@@ -78,6 +78,12 @@ class CreateAccountDetailsForm extends Component {
                                 <Input id="phoneNumber" name="phoneNumber" type="text" autoFocus required/>
                             </FormControl>
                         </Grid>
+                        <Grid xs={12} item className={classes.control}>
+                            <FormControl fullWidth>
+                                <InputLabel>Adres</InputLabel>
+                                <Input id="addressText" name="addressText" type="text" autoFocus required/>
+                            </FormControl>
+                        </Grid>
                         <Grid xs={6} item>
                             <Button
                                 variant="contained"

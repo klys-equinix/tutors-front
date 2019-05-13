@@ -249,20 +249,25 @@ class AccountView extends React.Component {
                         (
                             <Paper className={classes.paper}>
                                 <Grid container justify="center">
-                                    <Grid item xs={4} className={classes.gridItem} spacing={12}>
+                                    <Grid item xs={3} className={classes.gridItem} spacing={12}>
                                         <InputLabel>Imię: </InputLabel>
                                         <br/>
                                         {account.details.firstName}
                                     </Grid>
-                                    <Grid item xs={4} className={classes.gridItem} spacing={12}>
+                                    <Grid item xs={3} className={classes.gridItem} spacing={12}>
                                         <InputLabel>Nazwisko: </InputLabel>
                                         <br/>
                                         {account.details.lastName}
                                     </Grid>
-                                    <Grid item xs={4} className={classes.gridItem} spacing={12}>
+                                    <Grid item xs={3} className={classes.gridItem} spacing={12}>
                                         <InputLabel>Numer telefonu: </InputLabel>
                                         <br/>
                                         {account.details.phoneNumber}
+                                    </Grid>
+                                    <Grid item xs={3} className={classes.gridItem} spacing={12}>
+                                        <InputLabel>Adres: </InputLabel>
+                                        <br/>
+                                        {account.details.addressText}
                                     </Grid>
                                     <Grid item xs={2} className={classes.gridItem} spacing={12}>
                                         <Button

@@ -16,6 +16,7 @@ import createCricle from "../../createCircle.png"
 import Levels from "../../dict/Levels";
 import CreateOfferForm from "./modals/CreateOfferForm";
 import {getCurrentUser} from "../login/getCurrentUser";
+import {updateLocation} from "./updateLocation";
 
 
 const styles = theme => ({
@@ -65,7 +66,7 @@ class MapContainer extends Component {
             clickedTutorMarker: null,
             clickedTutorEmail: {},
             selectedPlace: {},
-            profileCreationMarkerPosition: null,
+            userMarkerLocation: null,
             tutors: [],
             currentUser: {},
         };
@@ -88,7 +89,7 @@ class MapContainer extends Component {
 
     onMapClicked = (mapProps, map, clickEvent) => {
         this.setState({
-            profileCreationMarkerPosition: {
+            userMarkerLocation: {
                 lat: clickEvent.latLng.lat(),
                 lng: clickEvent.latLng.lng()
             }
@@ -97,7 +98,7 @@ class MapContainer extends Component {
             this.setState({
                 showingProfileCreationButton: false,
                 profileCreationMarker: null,
-                profileCreationMarkerPosition: null
+                userMarkerLocation: null
             })
         }
     };
@@ -115,9 +116,13 @@ class MapContainer extends Component {
         if (navigator && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
                 getCurrentUser().then(c => {
-                    const coords = pos.coords;
+                    let coords = pos.coords;
+                    if(c.tutorProfile) {
+                        coords.latitude = c.tutorProfile.lat;
+                        coords.longitude = c.tutorProfile.lng;
+                    }
                     this.setState({
-                        currentLocation: {
+                        userLocation: {
                             lat: coords.latitude,
                             lng: coords.longitude
                         },
@@ -183,14 +188,13 @@ class MapContainer extends Component {
             currentUser,
             clickedTutorMarker,
             clickedTutorEmail,
-            profileCreationMarkerPosition,
-            currentLocation
+            userMarkerLocation,
+            userLocation
         } = this.state;
 
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
-
         return (
             <div
                 style={{
@@ -202,7 +206,7 @@ class MapContainer extends Component {
                 <Map
                     style={{}}
                     google={this.props.google}
-                    center={this.state.currentLocation}
+                    center={this.state.userLocation}
                     initialCenter={initialCenter}
                     onClick={this.onMapClicked}
                     onReady={this.fetchPlaces}
@@ -210,7 +214,7 @@ class MapContainer extends Component {
                 >
                     <Marker
                         onClick={this.onMarkerClick}
-                        position={profileCreationMarkerPosition ? profileCreationMarkerPosition : currentLocation}
+                        position={userMarkerLocation ? userMarkerLocation : userLocation}
                         icon={{
                             url: createCricle,
                             anchor: new google.maps.Point(22, 22),
@@ -225,7 +229,7 @@ class MapContainer extends Component {
                             {
                                 !currentUser.details ?
                                     (
-                                        <span>Dodaj dane konta aby móc utowrzyć profil</span>
+                                        <span>Dodaj dane konta aby móc utworzyć profil</span>
                                     )
                                     :
                                     (
@@ -245,6 +249,7 @@ class MapContainer extends Component {
                                                 variant="contained"
                                                 color="primary"
                                                 className={classes.addProfile}
+                                                onClick={() => updateLocation(userLocation)}
                                             >
                                                 Zmien swój adres
                                             </Button>
@@ -275,7 +280,7 @@ class MapContainer extends Component {
                 <Modal open={this.state.showingProfileCreationWindow} onClose={this.onClose}>
                     <Paper className={classNames(classes.paper, classes.modal)}>
                         <CreateProfileForm handleClose={this.onClose}
-                                           userCoords={this.state.profileCreationMarkerPosition}/>
+                                           userCoords={this.state.userMarkerLocation}/>
                     </Paper>
                 </Modal>
                 <Modal open={this.state.showingOfferCreationWindow} onClose={this.onClose}>
