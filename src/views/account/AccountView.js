@@ -37,6 +37,7 @@ import ShowOffersModal from "./modals/ShowOffersModal";
 import ShowLessonsModal from "./modals/ShowLessonsModal";
 import {getMyLessons} from "./modals/getMyLessons";
 import {getMyOffers} from "./modals/getMyOffers";
+import {getMyCourses} from "./modals/getMyCourses";
 
 const styles = theme => ({
     mainContainer: {
@@ -155,6 +156,10 @@ class AccountView extends React.Component {
         getMyOffers().then((data) => {
             this.setState({offers: data})
         })
+
+        getMyCourses().then((data) => {
+            this.setState({courses: data})
+        })
     };
 
     componentDidMount() {
@@ -226,7 +231,7 @@ class AccountView extends React.Component {
                             </ReactPlaceholder>
                         </Grid>
                         {this.renderDetails()}
-                        {!showDetailsModal && this.renderAddProfile()}
+                        {!showDetailsModal && this.renderProfile()}
                     </Grid>
                 </Paper>
             </div>
@@ -337,10 +342,11 @@ class AccountView extends React.Component {
         );
     }
 
-    renderAddProfile() {
+    renderProfile() {
         const {
             account,
             ready,
+            courses,
         } = this.state;
         const {classes, history} = this.props;
         return <Grid item xs={12} className={classNames(classes.gridItem, classes.userDetails)} justify={'center'}>
@@ -379,7 +385,7 @@ class AccountView extends React.Component {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {account.profile.courses.map(course => {
+                                            {courses && courses.map(course => {
                                                 return (
                                                     <TableRow>
                                                         <TableCell component="th" scope="row">
@@ -419,7 +425,7 @@ class AccountView extends React.Component {
                                 <Paper className={classes.modal}>
                                     <ShowOffersModal
                                         handleClose={this.onClose}
-                                        offers={account.profile.courses.filter(c => c.offers.length !== 0).flatMap(course => course.offers)}
+                                        offers={courses ? courses.filter(c => c.offers.length !== 0).flatMap(course => course.offers) : []}
                                         refetch={this.fetchData}
                                         editable={true}
                                     />
@@ -429,7 +435,7 @@ class AccountView extends React.Component {
                                 <Paper className={classes.modal}>
                                     <ShowLessonsModal
                                         handleClose={this.onClose}
-                                        lessons={account.profile.courses.filter(c => c.lessons.length !== 0).flatMap(course => course.lessons)}
+                                        lessons={courses ? courses.filter(c => c.lessons.length !== 0).flatMap(course => course.lessons) : []}
                                     />
                                 </Paper>
                             </Modal>

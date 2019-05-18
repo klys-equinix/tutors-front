@@ -113,53 +113,58 @@ class MapContainer extends Component {
     }
 
     componentDidMount() {
-        if (navigator && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                getCurrentUser().then(c => {
-                    let coords = pos.coords;
-                    if(c.tutorProfile) {
-                        coords.latitude = c.tutorProfile.lat;
-                        coords.longitude = c.tutorProfile.lng;
-                    }
-                    this.setState({
-                        userLocation: {
-                            lat: coords.latitude,
-                            lng: coords.longitude
-                        },
-                        currentUser: c
-                    })
+        getCurrentUser().then(c => {
+            let coords = {};
+            if (c.profile) {
+                coords.latitude = c.profile.lat;
+                coords.longitude = c.profile.lng;
+                this.setState({
+                    userLocation: {
+                        lat: coords.latitude,
+                        lng: coords.longitude
+                    },
                 })
+                this.fetchPlaces(coords)
+            } else {
+                if (navigator && navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        coords = pos.coords;
+                        this.setState({
+                            userLocation: {
+                                lat: coords.latitude,
+                                lng: coords.longitude
+                            },
+                        })
+                    })
+                    this.fetchPlaces(coords)
+                }
+            }
+            this.setState({
+                currentUser: c
             })
-        }
+        });
     }
 
-    fetchPlaces = () => {
-        const {searchParams} = this.props;
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const navCoords = pos.coords;
-            const coords = {
-                lat: navCoords.latitude ? navCoords.latitude : initialCenter.lat,
-                lng: navCoords.longitude ? navCoords.longitude : initialCenter.lng
-            };
-            getProfiles(coords.lat, coords.lng, searchParams)
-                .then(resp => {
-                    this.setState({tutors: resp.data})
-                });
-        });
+    fetchPlaces = (userLocation) => {
+        const {
+            searchParams,
+        } = this.props;
+        getProfiles(userLocation.latitude, userLocation.longitude, searchParams)
+            .then(resp => {
+                this.setState({tutors: resp.data})
+            });
     };
 
     fetchWithNewParams = (searchParams) => {
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const navCoords = pos.coords;
-            const coords = {
-                lat: navCoords.latitude ? navCoords.latitude : initialCenter.lat,
-                lng: navCoords.longitude ? navCoords.longitude : initialCenter.lng
-            };
-            getProfiles(coords.lat, coords.lng, searchParams)
-                .then(resp => {
-                    this.setState({tutors: resp.data})
-                });
-        });
+        const {
+            userMarkerLocation,
+            userLocation
+        } = this.state;
+        const navCoords = userMarkerLocation ? userMarkerLocation : userLocation;
+        getProfiles(navCoords.lat, navCoords.lng, searchParams)
+            .then(resp => {
+                this.setState({tutors: resp.data})
+            });
     };
 
     onClose = () => {
@@ -195,6 +200,7 @@ class MapContainer extends Component {
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
+
         return (
             <div
                 style={{
@@ -209,7 +215,6 @@ class MapContainer extends Component {
                     center={this.state.userLocation}
                     initialCenter={initialCenter}
                     onClick={this.onMapClicked}
-                    onReady={this.fetchPlaces}
                     onZoomChanged={this.zoomed}
                 >
                     <Marker
@@ -249,7 +254,7 @@ class MapContainer extends Component {
                                                 variant="contained"
                                                 color="primary"
                                                 className={classes.addProfile}
-                                                onClick={() => updateLocation(userLocation)}
+                                                onClick={() => updateLocation(userMarkerLocation)}
                                             >
                                                 Zmien swój adres
                                             </Button>
@@ -266,11 +271,11 @@ class MapContainer extends Component {
                         })
                     }
                     {
-                        this.state.tutors.map(tutor => {
-                            if (tutor.email !== currentUser.email) {
-                                return this.renderAvailableTutorCircle(tutor)
-                            }
-                        })
+                        // this.state.tutors.map(tutor => {
+                        //     if (tutor.email !== currentUser.email) {
+                        //         return this.renderAvailableTutorCircle(tutor)
+                        //     }
+                        // })
                     }
                     {
                         clickedTutorMarker &&

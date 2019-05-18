@@ -80,7 +80,9 @@ class CreateOfferForm extends Component {
             handleClose
         } = this.props;
         event.preventDefault();
-        createOffer(pickedCourse, offer).then(handleClose)
+        if(pickedCourse) {
+            createOffer(pickedCourse, offer).then(handleClose)
+        }
     }
 
     setOfferTime(time) {
