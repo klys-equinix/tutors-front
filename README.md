@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend for webapp Tutors(university project) - google maps based portal with tutor's announment's.
 
 ## Available Scripts
 
