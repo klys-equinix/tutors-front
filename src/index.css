@@ -9,3 +9,12 @@ html, body, #root {
 body {
   background: linear-gradient(to left, #4e90fc, #3a85ff) !important;
 }
+
+input[type='number'] {
+  -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}

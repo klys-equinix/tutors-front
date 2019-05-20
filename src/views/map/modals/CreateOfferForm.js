@@ -177,20 +177,25 @@ class CreateOfferForm extends Component {
             <ReactPlaceholder type='text' rows={1} ready={account}>
                 <Paper className={classes.paper}>
                     <Grid container justify="center">
-                        <Grid item xs={12} className={classes.control} spacing={12}>
+                        <Grid item xs={3} className={classes.control} spacing={12}>
                             <InputLabel>Odległość dojazdu: </InputLabel>
                             <br/>
                             {account.profile.range} km
                         </Grid>
-                        <Grid item xs={12} className={classes.control} spacing={12}>
+                        <Grid item xs={3} className={classes.control} spacing={12}>
                             <InputLabel>Opłata za dojazd (za km): </InputLabel>
                             <br/>
                             {account.profile.commuteRate} zł
                         </Grid>
-                        <Grid item xs={12} className={classes.control} spacing={12}>
+                        <Grid item xs={3} className={classes.control} spacing={12}>
                             <InputLabel>Dostępne miejsce korepetytora: </InputLabel>
                             <br/>
                             {account.profile.tutorsPlaceAvailable ? 'TAK' : 'NIE'}
+                        </Grid>
+                        <Grid item xs={3} className={classes.control} spacing={12}>
+                            <InputLabel>Adres: </InputLabel>
+                            <br/>
+                            {account.details.addressText}
                         </Grid>
                         <Grid item xs={12} className={classes.control} spacing={12}>
                             <InputLabel>Kursy: </InputLabel>

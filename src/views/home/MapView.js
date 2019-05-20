@@ -14,19 +14,15 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import {fade} from "@material-ui/core/es/styles/colorManipulator";
 import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Typography from "@material-ui/core/Typography";
-import InputBase from "@material-ui/core/InputBase";
 import {CurrentUserRepository} from "../../data/CurrentUserRepository";
 import Levels from "../../dict/Levels";
 import Discipline from "../../dict/Discipline";
 import Select from "@material-ui/core/Select";
 import {TextField} from "@material-ui/core";
-import FloatInput from "../../input/FloatInput";
 
 const styles = theme => ({
     root: {
@@ -56,30 +52,6 @@ const styles = theme => ({
             width: 'auto',
         },
     },
-    searchIcon: {
-        width: theme.spacing.unit * 9,
-        height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    inputRoot: {
-        width: '100%',
-    },
-    inputInput: {
-        paddingTop: theme.spacing.unit,
-        paddingRight: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
-        paddingLeft: theme.spacing.unit * 10,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        textColor: 'white',
-        [theme.breakpoints.up('md')]: {
-            width: 200,
-        },
-    },
     sectionDesktop: {
         display: 'none',
         [theme.breakpoints.up('md')]: {
@@ -105,6 +77,17 @@ const styles = theme => ({
             borderColor: 'white',
             color: 'white',
         }
+    },
+    textFieldInput: {
+        '&:before': {
+            borderColor: 'white',
+            color: 'white',
+        },
+        '&:after': {
+            borderColor: 'white',
+            color: 'white',
+        },
+        color: 'white'
     },
     icon: {
         fill: 'white',
@@ -165,9 +148,9 @@ class MapView extends React.Component {
                 <Grid item xs={12}>
                     <AppBar position="static">
                         <Toolbar>
-                            <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
-                                <MenuIcon/>
-                            </IconButton>
+                            {/*<IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">*/}
+                            {/*    <MenuIcon/>*/}
+                            {/*</IconButton>*/}
                             <Typography className={classes.title} variant="h6" color="inherit" noWrap>
                                 Tutors
                             </Typography>
@@ -231,7 +214,9 @@ class MapView extends React.Component {
                                             }
                                         }))
                                     }}
-                                    className={classes.select}
+                                    InputProps={{
+                                        className: classes.textFieldInput
+                                    }}
                                 />
                             </div>
                             <div className={classes.search}>
@@ -248,7 +233,11 @@ class MapView extends React.Component {
                                                 hourlyRate: val
                                             }
                                         }))
-                                    }}/>
+                                    }}
+                                    InputProps={{
+                                        className: classes.textFieldInput
+                                    }}
+                                />
                             </div>
                             <div className={classes.search}>
                                 <TextField
@@ -264,7 +253,11 @@ class MapView extends React.Component {
                                                 radius: val
                                             }
                                         }))
-                                    }}/>
+                                    }}
+                                    InputProps={{
+                                        className: classes.textFieldInput
+                                    }}
+                                />
                             </div>
                             <div className={classes.grow}/>
                             <div className={classes.sectionDesktop}>

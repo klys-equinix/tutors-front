@@ -105,7 +105,6 @@ class MapContainer extends Component {
 
     zoomed = (mapProps, map) => {
         console.log(mapProps)
-        debugger
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
@@ -215,15 +214,15 @@ class MapContainer extends Component {
                     center={this.state.userLocation}
                     initialCenter={initialCenter}
                     onClick={this.onMapClicked}
-                    onZoomChanged={this.zoomed}
+                    onZoomChanged={() => console.log('eee')}
                 >
                     <Marker
                         onClick={this.onMarkerClick}
                         position={userMarkerLocation ? userMarkerLocation : userLocation}
                         icon={{
                             url: createCricle,
-                            anchor: new google.maps.Point(22, 22),
-                            scaledSize: new google.maps.Size(22, 22)
+                            anchor: new google.maps.Point(11, 11),
+                            scaledSize: new google.maps.Size(11, 11)
                         }}
                     />
                     <InfoWindowEx
@@ -310,8 +309,8 @@ class MapContainer extends Component {
                 onClick={this.onTutorMarkerClick}
                 icon={{
                     url: circle,
-                    anchor: new google.maps.Point(22, 22),
-                    scaledSize: new google.maps.Size(22, 22)
+                    anchor: new google.maps.Point(17, 17),
+                    scaledSize: new google.maps.Size(17, 17)
                 }}
             />
         );
